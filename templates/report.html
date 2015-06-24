@@ -12,8 +12,13 @@
         }
         
         h1,h2,h3 {
-            margin: 20px auto;
+            margin: 20px auto 10px auto;
             line-height:1.2
+        }
+
+        span {
+            color:#aaa;
+            font-style: italic;
         }
     
         table tr td {
@@ -115,6 +120,7 @@
 
         <div id="results">
             <h3>This board has {{ num_words }} solutions, for a total of {{ points }} points.</h3>
+            <span>Hover over the words to see how they fit on the board...</span>
 
             <ul>
                 {% for word in sorted_words %}
