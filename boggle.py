@@ -1,7 +1,4 @@
 import random
-from trie import build_english_language_trie
-from jinja2 import Environment, PackageLoader
-
 
 class Boggle:
     size = 4
@@ -13,14 +10,12 @@ class Boggle:
     directions = [(1, 0), (-1, 0), (0, 1), (1, 1),
                   (-1, 1), (0, -1), (1, -1), (-1, -1)]
 
-    def __init__(self):
+    def __init__(self, board_str):
         self.grid = [['' for i in range(Boggle.size)] for j in range(Boggle.size)]
         dice_index = 0
-        random.shuffle(Boggle.dice)
         for x in range(0, Boggle.size):
             for y in range(0, Boggle.size):
-                letter = random.choice(Boggle.dice[dice_index])
-                self.grid[x][y] = letter
+                self.grid[x][y] = board_str[dice_index]
                 dice_index += 1
 
     def __str__(self):
@@ -64,6 +59,15 @@ class Boggle:
                 dfs_solve('', (x, y), [])
         return words
 
+def random_board():
+    board_str = ''
+    dice_index = 0
+    random.shuffle(Boggle.dice)
+    for w in range(0, Boggle.size**2):
+        board_str += random.choice(Boggle.dice[dice_index])
+        dice_index += 1
+    return Boggle(board_str)
+
 def count_points(solutions):
     points = 0
     for word in solutions:
@@ -80,30 +84,3 @@ def count_points(solutions):
             points += 8
     return points
 
-def main():
-    trie = build_english_language_trie()
-    board = Boggle()
-    solutions = board.solve(trie)
-    num_words = len(solutions)
-    points = count_points(solutions)
-    sorted_words = sorted(solutions.keys())
-
-    #print board
-    #print '\n'.join(solutions)
-    #print '%d words, for a total of %d points' % (num_words, points)
-
-    # render report to HTML
-    env = Environment(loader=PackageLoader('boggle', 'templates'))
-    template = env.get_template('report.html')
-
-    # setup solutions for render:
-    formatted_solutions = {}
-    for word in solutions:
-        formatted_pos = ['%d-%d' % pos for pos in solutions[word]]
-        formatted_solutions[word] = formatted_pos
-
-    output = template.render(grid=board.grid, solutions=formatted_solutions, num_words=num_words, points=points, sorted_words=sorted_words, size=Boggle.size)
-    print output
-
-if __name__ == "__main__":
-    main()
